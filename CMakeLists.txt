@@ -31,14 +31,52 @@ fetch_googletest(
 
 ADD_EXECUTABLE(main
     main.cpp
+    includes/table/table.cpp
+    includes/binary_files/file_record.cpp
+    includes/binary_files/utilities.cpp
+    includes/rpn/rpn.cpp 
+    includes/token/token.cpp 
+    includes/token/child_tokens.cpp
+    includes/shunting_yard/shunting_yard.cpp
+    includes/parser/parser.cpp 
+    includes/tokenizer/stokenize.cpp
+    includes/tokenizer/state_machine_functions.cpp
+    includes/sql/sql.cpp
+    includes/tokenizer/ftokenize.cpp
 )
 
 ADD_EXECUTABLE(basic_test
     _tests/_test_files/basic_test.cpp
+    includes/table/table.cpp
+    includes/binary_files/file_record.cpp
+    includes/binary_files/utilities.cpp
+    includes/rpn/rpn.cpp 
+    includes/token/token.cpp 
+    includes/token/child_tokens.cpp
+    includes/shunting_yard/shunting_yard.cpp
+    includes/parser/parser.cpp 
+    includes/tokenizer/stokenize.cpp
+    includes/tokenizer/state_machine_functions.cpp
+    includes/sql/sql.cpp
+    includes/tokenizer/ftokenize.cpp
+
 )
 
 ADD_EXECUTABLE(testB
     _tests/_test_files/testB.cpp
+    includes/table/table.cpp
+    includes/binary_files/file_record.cpp
+    includes/binary_files/utilities.cpp
+    includes/rpn/rpn.cpp 
+    includes/token/token.cpp 
+    includes/token/child_tokens.cpp
+    includes/shunting_yard/shunting_yard.cpp
+    includes/parser/parser.cpp 
+    includes/tokenizer/stokenize.cpp
+    includes/tokenizer/state_machine_functions.cpp
+    includes/sql/sql.cpp
+    includes/tokenizer/ftokenize.cpp
+
 )
 
 TARGET_LINK_LIBRARIES(basic_test gtest)
