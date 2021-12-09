@@ -62,11 +62,11 @@ vectorlong Relational::eval(const map_sl &fieldMap,const vector<mmap_sl *>& inde
                     results.push_back((*it_begins).value_list[i]);
                 }
             }
-            if((*it_begins).key <= (*it_ends).key) {
-                for(int i = 0; i < (*it_begins).value_list.size(); i++) {
-                    results.push_back((*it_begins).value_list[i]);
-                }
-            }
+            // if((*it_begins).key <= (*it_ends).key) {
+            //     for(int i = 0; i < (*it_begins).value_list.size(); i++) {
+            //         results.push_back((*it_begins).value_list[i]);
+            //     }
+            // }
         }
         else if(token_str() == ">") {
         mmap_sl::Iterator it_begins = index[fieldMap.at(left -> token_str())] -> upper_bound(right -> token_str());
@@ -104,7 +104,7 @@ Logical::Logical(string s) : Token(s) {
     if(s == "and") {
         _type_enum = LOGIC_AND;
     }
-    else {
+    else if(s == "or") {
         _type_enum = LOGIC_OR;
     }
 }

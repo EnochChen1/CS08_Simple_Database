@@ -85,15 +85,18 @@ void swap(T& a, T& b) {
 
 template <class T>
 int index_of_maximal(T data[ ], int n) {
-    int value = -1;
-    int index = 0;
+    T theMax = T();
     for(int i = 0; i < n; i++) {
-        if(data[i] > value) {
-            value = data[i];
-            index = i;
+        if(data[i] > theMax) {
+            theMax = data[i];
         }
     }
-    return index;
+    for(int i = 0; i < n; i++) {
+        if(data[i] == theMax) {
+            return i;
+        }
+    }
+    return -1;
 }                 //return index of the largest item in data
 
 template <class T>
@@ -134,24 +137,32 @@ for(int j = n; j > i; j--) {
 
 template <class T>
 void detach_item(T data[ ], int& n, T& entry) {
-    if(n == 0) {
-        return;
+    entry = T();
+    if(n > 0) {
+        n--;
+        entry = data[n];
     }
-    entry = data[n-1];
-    n--;
 }          //remove the last element in data and place
                                                         //it in entry
 
 template <class T>
 void delete_item(T data[ ], int i, int& n, T& entry) {
-    if(n == 0) {
-        return;
+    // if(n == 0) {
+    //     return;
+    // }
+    // entry = data[i];
+    // for(int j = i; j + 1 < n; j++) {
+    //     data[j] = data[j+1];
+    // }
+    // n--;
+    entry = T();
+    if(n > 0) {
+        entry = data[i];
+        for(; i < n-1; i++) {
+            data[i] = data[i+1];
+        }
+        n--;
     }
-    entry = data[i];
-    for(int j = i; j + 1 < n; j++) {
-        data[j] = data[j+1];
-    }
-    n--;
 }   //delete item at index i and place it in entry
 
 template <class T>
@@ -165,13 +176,18 @@ void merge(T data1[ ], int& n1, T data2[ ], int& n2) {
 
 template <class T>
 void split(T data1[ ], int& n1, T data2[ ], int& n2) {
-    if(n1 > 1) {
-        n2 = n1/2;
-        n1 = n1-n2;
-        for(int i = 0; i < n2; i++) {
-            data2[i] = data1[i+n1];
-        }
-    }   
+    // if(n1 > 1) {
+    //     n2 = n1/2;
+    //     n1 = n1-n2;
+    //     for(int i = 0; i < n2; i++) {
+    //         data2[i] = data1[i+n1];
+    //     }
+    // }   
+    n2 = n1/2;
+    n1 = n1 - n2;
+    for(int i = 0; i < n2; i++) {
+        data2[i] = data1[i+n1];
+    }
 }   //move n/2 elements from the right of data1
                                                         //and move to data2
 

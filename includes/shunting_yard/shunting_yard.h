@@ -8,6 +8,7 @@
 #include "../queue/MyQueue.h"
 #include "../token/child_tokens.h"
 Queue<Token*> conversion_to_queue_from_infix(const vectorstr& infix);
+using namespace std;
 class ShuntingYard {
     public:
         ShuntingYard();

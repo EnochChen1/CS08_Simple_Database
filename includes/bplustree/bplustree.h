@@ -53,15 +53,16 @@ public:
             return *this;
         }
         friend bool operator ==(const Iterator& lhs, const Iterator& rhs) {
-            if(lhs.it == NULL && rhs.it == NULL) {
-                return true;
-            }
-            if(lhs.it != NULL && rhs.it != NULL) {
-                Iterator left(lhs.it);
-                Iterator right(rhs.it);
-                return (*left == *right);
-            }
-            return false;
+            // if(lhs.it == NULL && rhs.it == NULL) {
+            //     return true;
+            // }
+            // if(lhs.it != NULL && rhs.it != NULL) {
+            //     Iterator left(lhs.it, lhs.key_ptr);
+            //     Iterator right(rhs.it, right.key_ptr);
+            //     return (*left == *right);
+            // }
+            return (lhs.key_ptr == rhs.key_ptr && lhs.it == rhs.it);
+            // return false;
             
         }
         friend bool operator !=(const Iterator& lhs, const Iterator& rhs) {
@@ -245,10 +246,10 @@ BPlusTree<T>::~BPlusTree() {
 
 template <class T>
 BPlusTree<T>& BPlusTree<T>::operator =(const BPlusTree<T>& RHS) {
-    dups_ok = RHS.dups_ok;
     next = NULL;
     if(this != &RHS) {
         clear_tree();
+        dups_ok = RHS.dups_ok;
         copy_tree(RHS);
     }
     return *this;
@@ -256,6 +257,10 @@ BPlusTree<T>& BPlusTree<T>::operator =(const BPlusTree<T>& RHS) {
 
 template <class T>
 void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
+    if(other.data_count < 0 || other.data_count > MAXIMUM + 1) {
+        return;
+    }
+    clear_tree();
     BPlusTree<T>* temp = NULL;
     copy_tree(other, temp);
 }  //copy other into this object
@@ -265,8 +270,11 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other, BPlusTree<T>*& s) {
 {
         dups_ok = other.dups_ok;
         child_count = other.child_count;
-        next = NULL;
         copy_array(data, other.data, data_count, other.data_count);
+        if(other.child_count < 0 || other.child_count > MAXIMUM + 2) {
+            return;
+        }
+        next = NULL;
         for(int i = 0; i < child_count; i++) {
             BPlusTree *copied_tree = new BPlusTree<T>;
             subset[i] = copied_tree;
@@ -311,6 +319,10 @@ void BPlusTree<T>::remove(const T& entry) {
 template <class T>
 void BPlusTree<T>::clear_tree() {
     data_count = 0;
+    if(child_count <= 0 || child_count > MAXIMUM + 2) {
+        child_count = 0;
+        return;
+    }
     for(int i = 0; i < child_count; i++) {
         subset[i] -> clear_tree();
         subset[i] = nullptr;
@@ -321,6 +333,9 @@ void BPlusTree<T>::clear_tree() {
 
 template <class T>
 bool BPlusTree<T>::contains(const T& entry) const {
+    if(data_count <= 0 || data_count > MAXIMUM + 1) {
+        return false;
+    }
     int i = first_ge(data, data_count, entry);
     bool found = (i<data_count && data[i] == entry);
     if(found) {

@@ -7,9 +7,9 @@
 using namespace std;
 enum TOKEN_TYPE {
     UNKNOWN,
-    TOKEN_STR,
     SET,
-    LOGIC_OR,
+    TOKEN_STR,
+    LOGIC_OR, 
     LOGIC_AND,
     RELATIONAL,
     L_PARENTHESIS,

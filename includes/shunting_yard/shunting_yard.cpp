@@ -11,17 +11,17 @@ Queue<Token*> conversion_to_queue_from_infix(const vectorstr& infix) {
         else if(infix[i] == "=") {
             conversion_from_infix_to_token.push(new Relational("="));
         }
-        else if(infix[i] == "<") {
-            conversion_from_infix_to_token.push(new Relational("<"));
-        }
         else if(infix[i] == ">") {
             conversion_from_infix_to_token.push(new Relational(">"));
         }
-        else if(infix[i] == "<=") {
-            conversion_from_infix_to_token.push(new Relational("<="));
+        else if(infix[i] == "<") {
+            conversion_from_infix_to_token.push(new Relational("<"));
         }
         else if(infix[i] == ">=") {
             conversion_from_infix_to_token.push(new Relational(">="));
+        }
+        else if(infix[i] == "<=") {
+            conversion_from_infix_to_token.push(new Relational("<="));
         }
         else if(infix[i] == "("){
             conversion_from_infix_to_token.push(new LeftParenthesis());
@@ -69,6 +69,7 @@ ShuntingYard& ShuntingYard::operator= (const ShuntingYard& rhs) {
 
 void ShuntingYard::infix(Queue<Token *> infix_queue) {
     _infix_queue = infix_queue;
+    _conversion_complete = false;
 }
 Queue<Token *> ShuntingYard::postfix() {
     if(!_conversion_complete) {
@@ -76,12 +77,21 @@ Queue<Token *> ShuntingYard::postfix() {
         Stack<Token *> work_stack;
         while(!(_infix_queue.empty())) {
             Token* token_entry =_infix_queue.pop();
-            if(token_entry -> get_type() <= SET) {
+            // cout << token_entry->token_str() << endl;
+            if(token_entry -> get_type() <= TOKEN_STR) {
                 postfix_answer.push(token_entry);
             }
             if((token_entry -> get_type() >= LOGIC_OR) && (token_entry -> get_type()) <= RELATIONAL) {
-                while(!(work_stack.empty()) && (work_stack.top() -> get_type() >= token_entry -> get_type() ) && work_stack.top() -> get_type() != L_PARENTHESIS) { //might need to do something involving precedence
-                    postfix_answer.push(work_stack.pop());
+                while(!(work_stack.empty())
+                 && (work_stack.top() -> get_type() >= token_entry -> get_type() ) 
+                 && work_stack.top() -> get_type() != L_PARENTHESIS) { //might need to do something involving precedence
+                    Token* something = work_stack.pop();
+                    // cout <<"work stack pop: "<< something ->token_str() << endl;
+                    postfix_answer.push(something);
+                    Queue<Token *>::Iterator it = postfix_answer.begin();
+                    for(; it != postfix_answer.end(); it++) {
+                        // cout <<"postfix_answer: "<< (*it)->token_str() << endl;
+                    }
                 }
                 work_stack.push(token_entry);
             }
@@ -90,7 +100,6 @@ Queue<Token *> ShuntingYard::postfix() {
             }
             if(token_entry -> get_type() == R_PARENTHESIS) {
                 while(work_stack.top() -> get_type() != L_PARENTHESIS) {
-                    assert(!(work_stack.empty()));
                     postfix_answer.push(work_stack.pop());
                 }
                 if(work_stack.top() -> get_type() == L_PARENTHESIS) {
@@ -101,12 +110,12 @@ Queue<Token *> ShuntingYard::postfix() {
         while(!(work_stack.empty())) {
             postfix_answer.push(work_stack.pop());
         }
-
+        _conversion_complete = true;
     }
-    _conversion_complete = true;
     return postfix_answer;
 }
 Queue<Token *> ShuntingYard::postfix(Queue<Token* > infix_queue) {
     _infix_queue = infix_queue;
-    postfix();
+    _conversion_complete = false;
+    return postfix();
 }

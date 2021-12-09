@@ -25,7 +25,7 @@ class Parser {
         void make_table();
         bool fail();
         void set_buffer(const char* s);
-        mmap_ss parse_tree();
+        const mmap_ss parse_tree() const;
 
 
     private:

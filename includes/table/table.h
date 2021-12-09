@@ -21,17 +21,17 @@
     class Table {
     public: 
         Table();
-        Table(const string& name, const vector<string> fields);
+        Table(const string& name, const vector<string>& fields);
         Table(const string& name);
-        void insert_into(const vector<string> row);
+        void insert_into(const vector<string>& row);
         Table select_all();
-        Table select(const vector<string> fields, string which_field, string operators, string inside_field);
-        Table select(const vectorstr fields, const vectorstr& infix);
-        Table select(const vectorstr fields, const Queue<Token*>& postfix);
-        vectorstr get_fields();
-        vectorlong select_recnos();
+        Table select(const vector<string>& fields, const string& which_field, const string& operators, const string& inside_field);
+        Table select(const vectorstr& fields, const vectorstr& infix);
+        Table select(const vectorstr& fields, const Queue<Token*>& postfix);
+        vectorstr get_fields() const;
+        vectorlong select_recnos() const;
         void reindex();
-        void set_fields(const vectorstr fields);
+        void set_fields(const vectorstr& fields);
         // void table_for_simple_select(Table &t, vectorlong records, FileRecord r2, fstream &ft);
         friend ostream& operator <<(ostream& outs, const Table & t) {
             fstream f;

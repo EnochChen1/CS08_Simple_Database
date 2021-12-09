@@ -11,7 +11,7 @@ Table::Table() {
     // last_record = -1;
 }
 
-Table::Table(const string& name, const vector<string> fields) {
+Table::Table(const string& name, const vector<string>& fields) {
 
     serial_no++;
     table_name = name;
@@ -30,10 +30,15 @@ Table::Table(const string& name, const vector<string> fields) {
     ofstream field_names_file;
     field_names_file.open(text_name); //create text file
     // field_names_file.open(field_names + "_fields.txt");
-    for(int i = 0; i < fields.size(); i++) {    //fill out the _field_vector vector<string>
+    if(field_names_file.is_open()) {
+        for(int i = 0; i < fields.size(); i++) {    //fill out the _field_vector vector<string>
         _field_map.insert(fields[i], i);//build map for fields and number each one is
         _indices.push_back(new mmap_sl()); //build lookup maps by creating a vector for indices
         field_names_file << fields[i] << endl; //insert field_names into text file
+        }
+    }
+    else {
+        cout << "Can't open the file: " << text_name << endl;
     }
     field_names_file.close(); //closes files here
     file.close();
@@ -47,19 +52,24 @@ Table::Table(const string& name) {
     text_name = name + ".txt";   //doing the names
     ifstream is;
     is.open(text_name); //opens textfile
+    int i = 0;
     if(is.is_open()) {
         string emp = "";
-        for(int i = 0; getline(is, emp); i++) { //adds the field names from the text file
+        while(getline(is, emp)) { //adds the field names from the text file
             _field_vector.push_back(emp); //to the field name vector, field map, and the indices
             _field_map.insert(_field_vector[i],i);
             _indices.push_back(new mmap_sl());
+            i++;
         }
+    }
+    else {
+        cout << "Can't open file: "<<text_name << endl;
     }
     is.close(); //close
     reindex();  //call reindex to rebuild the index
 }
 
-void Table::insert_into(const vector<string> row) {
+void Table::insert_into(const vector<string>& row) {
     // fstream file;
     // open_fileRW(file, _name.c_str());
     // // open_fileRW(file, (_name+to_string(serial_no)+".bin").c_str());  //open binary file
@@ -79,25 +89,31 @@ void Table::insert_into(const vector<string> row) {
     last_record++; //increment the number of records
     _results.push_back(last_record); //push back into vectorlong of record numbers
     for(int i = 0; i < row.size(); i++) {
-         _indices[i] -> get(row[i]).push_back(last_record);//add the record number to the indices
+         _indices[i] -> at(row[i]).push_back(last_record);//add the record number to the indices
     }
     f.close(); //then close the file
 }
 
 Table Table::select_all() {
     _results.clear(); //clears vectorlong of record nos just incase there is things I don't need
+    // cout << "table: "<< __LINE__ << endl;
     for(int i = 0; i <= last_record; i++) {
         _results.push_back(i); // then fill it back up
     }
+        // cout << "table: "<< __LINE__ << endl;
+
     Table t(table_name + to_string(serial_no), _field_vector); //then create a select table, with the specific name and all the fields
+    // cout << "table: "<< __LINE__ << endl;
 
     fstream file;
     FileRecord r2;
     bin_name = table_name + ".bin";
     // open_fileRW(file, _name.c_str()); //open the binary file to write in stuff
     open_fileRW(file, bin_name.c_str());
+        // cout << "table: "<< __LINE__ << endl;
+
     for(int i = 0; i < _results.size(); i++) {
-        r2.read(file, _results[i]); //reads the original file, and gets the rows from the specific record numbers given
+        r2.read(file, i); //reads the original file, and gets the rows from the specific record numbers given
         vectorstr recordedvalues;
         for(int j = 0; j < _field_vector.size(); j++) {
             recordedvalues.push_back(r2._record[j]); //pushes the record into recorded values
@@ -106,25 +122,23 @@ Table Table::select_all() {
         recordedvalues.clear(); //clears it so it can be used for the next one
     }
     file.close();//close file
+        // cout << "table: "<< __LINE__ << endl;
+
     return t;
 }
 
-Table Table::select(vector<string> fields, string which_field, string operators, string inside_field) {
+Table Table::select(const vector<string>& fields, const string& which_field, const string& operators, const string& inside_field) {
     _results.clear();
     //open the file for reading and writing.
-    Table copied(table_name, fields);
-    copied._field_vector = _field_vector;
-    copied._results.clear();
-    long field_pos = copied._field_map[which_field]; //below operators essentially do stuff that relational does
     if(operators == "=") {
-        copied._results = (*copied._indices[field_pos])[inside_field];
+        _results = (*_indices[_field_map.at(which_field)])[inside_field];
     }
     else if(operators == "<") {
         mmap_sl::Iterator it_begins = _indices[_field_map.at(which_field)] -> begin();
         mmap_sl::Iterator it_ends = _indices[_field_map.at(which_field)] -> lower_bound(inside_field);
         for(; it_begins != it_ends; it_begins++) {
             for(int i = 0; i < (*it_begins).value_list.size(); i++) {
-                copied._results.push_back((*it_begins).value_list[i]);
+                _results.push_back((*it_begins).value_list[i]);
             }
         }
     }
@@ -133,7 +147,7 @@ Table Table::select(vector<string> fields, string which_field, string operators,
     mmap_sl::Iterator it_ends = _indices[_field_map.at(which_field)] -> end();
         for(; it_begins != it_ends; it_begins++) {
             for(int i = 0; i < (*it_begins).value_list.size(); i++) {
-                copied._results.push_back((*it_begins).value_list[i]);
+                _results.push_back((*it_begins).value_list[i]);
             }
         }
     }
@@ -142,7 +156,7 @@ Table Table::select(vector<string> fields, string which_field, string operators,
     mmap_sl::Iterator it_ends = _indices[_field_map.at(which_field)] -> upper_bound(inside_field);
         for(; it_begins != it_ends; it_begins++) {
             for(int i = 0; i < (*it_begins).value_list.size(); i++) {
-                copied._results.push_back((*it_begins).value_list[i]);
+                _results.push_back((*it_begins).value_list[i]);
             }
         }
     }
@@ -151,12 +165,13 @@ Table Table::select(vector<string> fields, string which_field, string operators,
     mmap_sl::Iterator it_ends = _indices[_field_map.at(which_field)] -> end();
         for(; it_begins != it_ends; it_begins++) {
             for(int i = 0; i < (*it_begins).value_list.size(); i++) {
-                copied._results.push_back((*it_begins).value_list[i]);
+                _results.push_back((*it_begins).value_list[i]);
             }
         }
     }
      fstream file;
     FileRecord r2;
+    Table copied(table_name + to_string(serial_no), fields);
     bin_name = table_name + ".bin";
     // open_fileRW(file, _name.c_str()); //open the binary file to write in stuff
     open_fileRW(file, bin_name.c_str());
@@ -169,7 +184,6 @@ Table Table::select(vector<string> fields, string which_field, string operators,
         copied.insert_into(recordedvalues);
         recordedvalues.clear();
     }
-    
     return copied;
     
         // typename mmap_sl::Iterator it = _indices[which_field].begin();
@@ -186,15 +200,25 @@ Table Table::select(vector<string> fields, string which_field, string operators,
         
 }
 
-Table Table::select(const vectorstr fields, const vectorstr& infix) {
+Table Table::select(const vectorstr& fields, const vectorstr& infix) {
+        // cout << "table: "<< __LINE__ << endl;
+
     Queue<Token *> _infix_queue = conversion_to_queue_from_infix(infix); //gets an infix vector str
+        // cout << "table: "<< __LINE__ << endl;
+
     ShuntingYard sy(_infix_queue); //creates shuntingyard object
+        // cout << "table: "<< __LINE__ << endl;
+
     Queue<Token *> postfix = sy.postfix(); //then converts infix to postfix
+    // cout << "table: "<< __LINE__ << endl;
 
     return select(fields, postfix); //calls select with postfix
 }
-Table Table::select(const vectorstr fields, const Queue<Token*>& postfix) {
+Table Table::select(const vectorstr& fields, const Queue<Token*>& postfix) {
+        // cout << "table: "<< __LINE__ << endl;
+
     _results.clear();
+    
     //open the file for reading and writing.
     RPN reversed(postfix);  //rpn constructor
     _results = reversed.eval(_field_map, _indices);
@@ -208,7 +232,6 @@ Table Table::select(const vectorstr fields, const Queue<Token*>& postfix) {
     open_fileRW(file, bin_name.c_str()); //opened original file
     // cout << "_results.size(): "<< _results.size() << endl;
     for(int i = 0; i < _results.size(); i++) {
-        
         r2.read(file, _results[i]);
         vectorstr recordedvalues ;
         for(int j = 0; j < fields.size(); j++) {
@@ -220,7 +243,7 @@ Table Table::select(const vectorstr fields, const Queue<Token*>& postfix) {
     file.close();
     return t;
 }
-vectorlong Table::select_recnos() {
+vectorlong Table::select_recnos() const {
     return _results;    //returns the vectorlong of record numbers
 }
 
@@ -296,11 +319,11 @@ void Table::reindex() {
    empty = false;
 }
 
-void Table::set_fields(const vectorstr fields) {
+void Table::set_fields(const vectorstr& fields) {
     _field_vector = fields; //used in SQL
 }
 
-vectorstr Table::get_fields() {
+vectorstr Table::get_fields() const {
     return _field_vector; //used in SQL
 }
 // void Table::set_fields(const vectorstr fields) {

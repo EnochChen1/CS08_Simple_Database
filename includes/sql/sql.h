@@ -9,7 +9,8 @@ using namespace std;
 class SQL {
     public:
         SQL();
-        Table command(string line);
+        SQL(string stuff);
+        Table command(const string& line);
         vectorlong select_recnos();
     private:
         Table t;

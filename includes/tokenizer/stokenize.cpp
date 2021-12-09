@@ -269,7 +269,7 @@ STokenizer& operator >> (STokenizer& s, Token& t) {
         some_string = char(161);
     }
     t = Token(some_string, type);
-
+    // cout << some_string << endl;
     return s;
 }
 

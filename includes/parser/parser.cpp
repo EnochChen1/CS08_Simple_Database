@@ -4,7 +4,7 @@ Parser::Parser() {
     for(int i = 0; i < MAX_BUFFER; i++) {
         _buffer[i] = '\0';
     }
-    fail_flag = false;
+    fail_flag = true;
     input_q = Queue<Token*>();
 }
 
@@ -12,15 +12,16 @@ Parser::Parser(const char *s) {
     build_keyword_list();
     make_table();
     set_buffer(s);
-    fail_flag = false;
+    fail_flag = true;
     set_string(_buffer);
 
 }
 
-mmap_ss Parser::parse_tree() {
+const mmap_ss Parser::parse_tree() const {
     return ptree;
 }
 void Parser::make_table() {
+    // cout <<"in make table" << endl;
     init_table(adjacency_table); //sets everything to -1
     //select success states
     mark_success(adjacency_table, START_SELECT + 3); //by choosing a table name you come here from state 3
@@ -69,18 +70,10 @@ void Parser::make_table() {
     mark_cell(START_INSERT + 2, adjacency_table, VALUES, START_INSERT + 3); //checks values
     mark_cell(START_INSERT + 3, adjacency_table, SYMBOL, START_INSERT + 4); //gets the name of values
     mark_cell(START_INSERT + 4, adjacency_table, SYMBOL, START_INSERT + 4); //gets more symbols if necessary
-    //select
-    mark_success(adjacency_table, START_SELECT+3); //mark_success for select, with no where
-    mark_success(adjacency_table, START_SELECT+5); //mark success for select, with where condition
-    //create/make
-    mark_success(adjacency_table, START_CREATE+4); //success state for create
-    //insert
-    mark_success(adjacency_table, START_INSERT+4); //success state for insert
-    //drop
-    mark_success(adjacency_table, START_DROP+2); //success state for drop
 }
 
 void Parser::build_keyword_list() {
+    // cout << "build keyword list" << endl;
     vectorstr keywords {"zero","select", "from", "where", "create", "table", "fields", "make", "drop", "insert", "into", "values", "symbol"};
     for(int i = 0; i < keywords.size(); i++) {
         keywords_map.insert(keywords[i], i);
@@ -88,6 +81,7 @@ void Parser::build_keyword_list() {
 }
 
 void Parser::set_string(char* s) {
+    // cout << "in set string" << endl;
     ptree.clear(); // ptree is cleared just in case it had something inside
     input_q = Queue<Token*>(); //input queue is cleared
     // cout << "in the set_string" << endl;
@@ -113,6 +107,7 @@ bool Parser::fail() {
     return fail_flag; //return the fail_flag
 }
 bool Parser::get_parse_tree() {
+    // cout << "in parse_tree" << endl;
     int state = 0;
     int col = 0;
     Token* popped;
@@ -208,13 +203,13 @@ bool Parser::get_parse_tree() {
         }
     }
     if(state != -1) {
-        fail_flag = true;
-        return fail_flag;
+        fail_flag = false;
+        return true;
     }
     else {
         ptree.clear();
-        fail_flag = false;
-        return fail_flag;
+        fail_flag = true;
+        return false;
     }
 }
 

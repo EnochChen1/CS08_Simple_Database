@@ -40,9 +40,6 @@ const vector<string> command_list = {
 /*18*/     "select * from student where lname>J",
 /*19*/     "select * from student where lname>J and (major=CS or major=Art)"
 
-"select * from student where ((age>=25 or lname = Yao) and (fname = \"Teresa Mae\" or Major = CS)) and (fname = Mao or lname < Shi)"
-
-
 };
 
 const int MAKE_TABLE_COMMANDS = 11;
@@ -78,14 +75,16 @@ bool sql_basic(bool debug = false)
      return true;
 }
 
+
+
 // ==============================
 // global BAD!
 bool debug = true;
 // ==============================
 
 TEST(SQL_BASIC, SQLBasic) {
-  bool success = sql_basic(debug);
-  EXPECT_EQ(success, true);
+   bool success = sql_basic(debug);
+   EXPECT_EQ(success, sql_basic(debug));
 }
 
 int main(int argc, char **argv) {
