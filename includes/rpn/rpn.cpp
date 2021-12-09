@@ -37,13 +37,13 @@ vectorlong RPN::eval(const map_sl& fieldMap, const vector<mmap_sl*>& index) {
         // cout << "rpn "<<boolalpha<<pop_this.empty() << endl;
         while(!pop_this.empty()) {
             evaluate.push(pop_this.pop());
-            if(evaluate.top() -> get_type() <= TOKEN_TYPE::LOGIC_AND && evaluate.top() -> get_type() >= TOKEN_TYPE::LOGIC_OR) {
+            if(evaluate.top() -> get_type() >= LOGIC_OR && evaluate.top() -> get_type() <= LOGIC_AND) {
                 Token* operators = evaluate.pop();
                 vectorlong right = evaluate.pop() -> recnos();
                 vectorlong left = evaluate.pop() -> recnos();
                 evaluate.push(new ResultSet(operators -> eval(left, right)));
             }
-            if(evaluate.top() -> get_type() == TOKEN_TYPE::RELATIONAL) {        
+            if(evaluate.top() -> get_type() == RELATIONAL) {        
                 Token* operators = evaluate.pop();
                 Token* right = evaluate.pop();
                 Token* left = evaluate.pop();

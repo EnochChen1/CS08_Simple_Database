@@ -29,7 +29,7 @@ const vector<string> command_list = {
 /*09*/     "insert into student values \"Billy\",	     Jackson, 	Math,	27",
 /*10*/     "insert into student values \"Mary Ann\",   Davis,	Math,	30",
 
-/*11*/     "select * from employee",
+/*11*/     "select ** from employee",
 /*12*/     "select last, first, age from employee",
 /*13*/     "select last from employee",
 /*14*/     "select * from employee where last = Johnson",
@@ -39,6 +39,9 @@ const vector<string> command_list = {
 /*17*/     "select * from student where (major=CS or major=Art)",
 /*18*/     "select * from student where lname>J",
 /*19*/     "select * from student where lname>J and (major=CS or major=Art)"
+
+"select * from student where ((age>=25 or lname = Yao) and (fname = \"Teresa Mae\" or Major = CS)) and (fname = Mao or lname < Shi)"
+
 
 };
 

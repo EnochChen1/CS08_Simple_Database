@@ -2,12 +2,12 @@
 Queue<Token*> conversion_to_queue_from_infix(const vectorstr& infix) {
     Queue<Token*> conversion_from_infix_to_token;
     for(int i = 0; i < infix.size(); i++) {
-        if(infix[i] == "and") {
-            conversion_from_infix_to_token.push(new Logical("and"));
-        } 
-        else if(infix[i] == "or") {
+        if(infix[i] == "or") {
             conversion_from_infix_to_token.push(new Logical("or"));
         }
+        else if(infix[i] == "and") {
+            conversion_from_infix_to_token.push(new Logical("and"));
+        } 
         else if(infix[i] == "=") {
             conversion_from_infix_to_token.push(new Relational("="));
         }
@@ -79,9 +79,8 @@ Queue<Token *> ShuntingYard::postfix() {
             if(token_entry -> get_type() <= SET) {
                 postfix_answer.push(token_entry);
             }
-            if((token_entry -> get_type()) <= RELATIONAL && (token_entry -> get_type() >= LOGIC_OR)) {
-                while(!(work_stack.empty()) && work_stack.top() -> get_type() != L_PARENTHESIS
-                 && (work_stack.top() -> get_type() >= token_entry -> get_type() )) { //might need to do something involving precedence
+            if((token_entry -> get_type() >= LOGIC_OR) && (token_entry -> get_type()) <= RELATIONAL) {
+                while(!(work_stack.empty()) && (work_stack.top() -> get_type() >= token_entry -> get_type() ) && work_stack.top() -> get_type() != L_PARENTHESIS) { //might need to do something involving precedence
                     postfix_answer.push(work_stack.pop());
                 }
                 work_stack.push(token_entry);

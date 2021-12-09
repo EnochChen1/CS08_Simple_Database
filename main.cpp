@@ -1,76 +1,95 @@
 #include <iostream>
-#include "includes/tokenizer/ftokenize.h"
-#include "includes/bplustree/multimap.h"
-#include "includes/bplustree/map.h"
+#include <iomanip>
+#include <sstream>
 #include <string>
+#include "includes/sql/sql.h"
+#include "includes/table/table.h"
 
 using namespace std;
 
-MMap<string, long> get_word_indices(char* file_name);
+int main(int argv, char** argc) {
+    int input = 0;
+    string table_name;
+    string fields;
+    string values;
+    string complete_command;
+    SQL sql;
+    Table t;
+    while(input != 6) {
+        cout << "Enter 1 to start creating/making a table" << endl;
+        cout << "Enter 2 to start inserting values into the table" << endl;
+        cout << "Enter 3 to get a table of selected fields and conditions" << endl;
+        cout << "Enter 6 to end the process" << endl;
+        cout << "Enter one of these four numbers here: ";
+        cin >> input;
+            if(input == 1) {
+                cout << "You have chosen to create/make a table: " << endl;
+                cout << "Please enter the table name here: ";
+                cin >> table_name;
+                cout << "Please enter the fields here with commas in between: " ;
+                cin.ignore(6,'\n');
+                cin.clear();
+                getline(cin, fields);
+                complete_command = "create table "+ table_name + " fields "+ fields;              
+                t = sql.command(complete_command);
+                cout << t << endl;
+            }
+            if(input == 2) {
+                cout << "You have chosen to insert values into the table: " << endl;
+                cout << "Please enter the table name you would like to insert into: " << endl; 
+                cin >> table_name;
+                cout <<"Pease enter the values you would like to insert: " << endl;
+                cin.ignore(6,'\n');
+                cin.clear();
+                getline(cin, values);
+                complete_command = "insert into " + table_name + " values " + values;
+                t = sql.command(complete_command);
+                cout << t << endl;
+            }
+            if(input == 3) {
+                cout << "You have chosen to obtain a table of selected fields and conditions: " << endl;
+                cout << "Please enter the table you would like to open: " << endl;
+                cin >> table_name;
+                cout << "Please enter the field(s) you would like from the table: " << endl;
+                cin.ignore(6,'\n');
+                cin.clear();
+                getline(cin, fields);
+                cout << "Do you have conditions you would like to place? If yes: type yes" << endl;
+                cout << "Here is how to do it:" << endl;
+                cout << "                    where <SPECIFIC_FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>" << endl;
+                cout << "                        [<LOGICAL_OPERATOR> " << endl;
+                cout << "                           <FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>...]" << endl;
+                cin.ignore(6, '\n');
+                cin.clear();
+
+            }
 
 
-int main(int argc, char *argv[])
-{
-    MMap<string, long> word_indices;
-    word_indices = get_word_indices("solitude.txt");
-    cout<<endl<<endl<<endl;
-
-    //list all nodes of the index mmap:
-    for (MMap<string, long>::Iterator it = word_indices.begin();
-         it != word_indices.end(); it++){
-        cout<<*it<<endl;
-    }
-
-
-    cout<<endl<<endl<<endl;
-    cout<<"---------------------------------------------------"<<endl;
-    string this_word = "ice";
-    cout<<"---------------------------------------------------"<<endl;
-    cout<<"Indices of \""<<this_word<<"\""<<endl;
-    //list indices of this_word:
-    if (word_indices.contains(this_word)){
-        cout<<this_word<<": "<<word_indices[this_word]<<endl;
-    }
-    cout<<endl<<endl<<endl;
-
-    cout<<"---------------------------------------------------"<<endl;
-    string from = "ask";
-    string to = "asker";
-    //list from .. to:
-    cout<<"listing indices from \""<<from<<"\" to \""<<to<<"\""<<endl;
-    cout<<"---------------------------------------------------"<<endl;
-    for (MMap<string, long>::Iterator it =
-                word_indices.lower_bound(from);
-         it != word_indices.upper_bound(to) &&
-         it != word_indices.end(); it++){
-        cout<<*it<<endl;
-    }
-
-    cout <<endl<<endl<<endl<< "========== E N D  ====================" << endl;
-    return 0;
-}
-
-
-MMap<string, long> get_word_indices(char* file_name){
-    const bool debug = false;
-    MMap<string, long> word_indices;
-    FTokenizer ftk("solitude.txt");
-    Token t;
-    long count = 0;
-
-    ftk >> t;
-    while (ftk.more()){
-        //only the "words"
-        if (t.type_string() == "ALPHA"){
-            string s;
-            s = t.token_str();
-            word_indices[s] += count;
-            count++;
-            if (debug)
-                cout<<"|"<<t.token_str()<<"|"<<endl;
+            if(input == 5) {
+                cout <<"Here is how to create inputs for the database to respond to: " << endl;
+                cout << "<CREATE | MAKE> : {  <create | make> table <TABLE_NAME> fields <FIELD_NAME> [, <FIELD_NAME>...]  }" << endl;
+                cout << "<INSERT> : { insert <INTO> <TABLE_NAME> values <VALUE> [, <VALUE>...]      }" << endl;
+                cout << "<SELECT> : {  select <* | FIELD_NAME> [, ,FIELD_NAME>...]" << endl;
+                cout << "                    from <TABLE_NAME>" << endl;
+                cout << "                    where <FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>" << endl;
+                cout << "                        [<LOGICAL_OPERATOR> " << endl;
+                cout << "                           <FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>...]" << endl;
+                cout << endl;
+                cout << "<VALUE>  : A string of alphanumeric characters, or a string of alphanumeric" << endl;
+                cout << "           characters and spaces enclosed by double quotation marks:" << endl;
+                cout << "           \"Jean Luise\", Finch, 1923" << endl;
+                cout << "<RELATIONAL OPERATOR> : [ = | > | < | >= | <= ]" << endl;
+                cout << "<LOGICAL OPERATOR>    : [and | or]" << endl;
+        
         }
-        ftk >> t;
+    cout << "Enter 1 to start creating/making a table" << endl;
+    cout << "Enter 2 to start inserting values into the table" << endl;
+    cout << "Enter 3 to get a table of selected fields and conditions" << endl;
+    cout << "Enter 6 to end the process" << endl;
+    cout << "Enter one of these four numbers here: ";
+    cin.ignore(6,'\n');
+    cin.clear();
+    cin >> input;
+
     }
-    return word_indices;
 }
- 
