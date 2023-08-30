@@ -62,7 +62,7 @@ vectorlong Relational::eval(const map_sl &fieldMap,const vector<mmap_sl *>& inde
                     results.push_back((*it_begins).value_list[i]);
                 }
             }
-            // if((*it_begins).key <= (*it_ends).key) {
+            // if((*it_begins).key <= (*it_ends).key) { //this is hackish shit that messed up my shit
             //     for(int i = 0; i < (*it_begins).value_list.size(); i++) {
             //         results.push_back((*it_begins).value_list[i]);
             //     }

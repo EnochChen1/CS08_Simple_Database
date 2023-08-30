@@ -214,6 +214,7 @@ Table Table::select(const vectorstr& fields, const vectorstr& infix) {
 
     return select(fields, postfix); //calls select with postfix
 }
+
 Table Table::select(const vectorstr& fields, const Queue<Token*>& postfix) {
         // cout << "table: "<< __LINE__ << endl;
 
@@ -243,6 +244,7 @@ Table Table::select(const vectorstr& fields, const Queue<Token*>& postfix) {
     file.close();
     return t;
 }
+
 vectorlong Table::select_recnos() const {
     return _results;    //returns the vectorlong of record numbers
 }

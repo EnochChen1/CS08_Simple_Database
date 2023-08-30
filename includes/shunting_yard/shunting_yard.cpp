@@ -71,6 +71,7 @@ void ShuntingYard::infix(Queue<Token *> infix_queue) {
     _infix_queue = infix_queue;
     _conversion_complete = false;
 }
+
 Queue<Token *> ShuntingYard::postfix() {
     if(!_conversion_complete) {
         postfix_answer = Queue<Token *>();
@@ -114,6 +115,7 @@ Queue<Token *> ShuntingYard::postfix() {
     }
     return postfix_answer;
 }
+
 Queue<Token *> ShuntingYard::postfix(Queue<Token* > infix_queue) {
     _infix_queue = infix_queue;
     _conversion_complete = false;

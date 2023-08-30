@@ -15,14 +15,16 @@ int main(int argv, char** argc) {
     string values;
     string complete_command;
     string which;
+    string file_name;
     SQL sql;
     Table t;
-    while(input != 5) {
+    do {
         cout << "Enter 1 to start creating/making a table" << endl;
         cout << "Enter 2 to start inserting values into the table" << endl;
         cout << "Enter 3 to get a table of selected fields and conditions" << endl;
         cout << "Enter 4 to put in a custom command" << endl;
-        cout << "Enter 5 to end the process" << endl;
+        cout << "Enter 5 to read a file and get sql inputs into the database" << endl;
+        cout << "Enter 6 to end the process" << endl;
         cout << "Enter one of these five numbers here: ";
         cin >> input;
             if(input == 1) {
@@ -41,7 +43,7 @@ int main(int argv, char** argc) {
                 cout << "You have chosen to insert values into the table: " << endl;
                 cout << "Please enter the table name you would like to insert into: " << endl; 
                 cin >> table_name;
-                cout <<"Pease enter the values you would like to insert: " << endl;
+                cout <<"Please enter the values you would like to insert: " << endl;
                 cin.ignore(6,'\n');
                 cin.clear();
                 getline(cin, values);
@@ -64,6 +66,7 @@ int main(int argv, char** argc) {
                     cout << "                    where <FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>" << endl;
                     cout << "                        [<LOGICAL_OPERATOR> " << endl;
                     cout << "                           <FIELD_NAME> <RELATIONAL_OPERATOR> <VALUE>...]" << endl;
+                    cout << "Please enter the condition you would like to have: " << endl;
                     cin.ignore(6, '\n');
                     cin.clear();
                     getline(cin, condition);
@@ -78,6 +81,7 @@ int main(int argv, char** argc) {
                 }
             }
             if(input == 4) {
+                cout << "You have chosen to input a custom command: " << endl;
                 cout <<"Here is how to create inputs for the database to respond to: " << endl;
                 cout << "<CREATE | MAKE> : {  <create | make> table <TABLE_NAME> fields <FIELD_NAME> [, <FIELD_NAME>...]  }" << endl;
                 cout << "<INSERT> : { insert <INTO> <TABLE_NAME> values <VALUE> [, <VALUE>...]      }" << endl;
@@ -92,21 +96,19 @@ int main(int argv, char** argc) {
                 cout << "           \"Jean Luise\", Finch, 1923" << endl;
                 cout << "<RELATIONAL OPERATOR> : [ = | > | < | >= | <= ]" << endl;
                 cout << "<LOGICAL OPERATOR>    : [and | or]" << endl;
+                cout << "Please input your custom command here: "<< endl;
                 cin.ignore(6, '\n');
                 cin.clear();
                 getline(cin, complete_command);
                 t = sql.command(complete_command);
                 cout << t << endl;
+                
         }
-    cout << "Enter 1 to start creating/making a table" << endl;
-    cout << "Enter 2 to start inserting values into the table" << endl;
-    cout << "Enter 3 to get a table of selected fields and conditions" << endl;
-    cout << "Enter 4 to put in a custom command" << endl;
-    cout << "Enter 5 to end the process" << endl;
-    cout << "Enter one of these five numbers here: ";
-    cin.ignore(6,'\n');
-    cin.clear();
-    cin >> input;
-
-    }
-}
+            if(input == 5) {
+                cout << "You have chosen to input a filename to read sql inputs into the database: "<<endl;
+                cout << "Please input the filename" << endl;
+                cin >> file_name;
+                SQL made_for_file(file_name+".txt");
+            }
+    }while(input != 6);
+} 

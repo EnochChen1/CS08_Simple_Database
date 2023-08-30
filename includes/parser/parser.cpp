@@ -20,6 +20,7 @@ Parser::Parser(const char *s) {
 const mmap_ss Parser::parse_tree() const {
     return ptree;
 }
+
 void Parser::make_table() {
     // cout <<"in make table" << endl;
     init_table(adjacency_table); //sets everything to -1
@@ -106,6 +107,7 @@ void Parser::set_string(char* s) {
 bool Parser::fail() {
     return fail_flag; //return the fail_flag
 }
+
 bool Parser::get_parse_tree() {
     // cout << "in parse_tree" << endl;
     int state = 0;
